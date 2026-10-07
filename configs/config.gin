@@ -1,0 +1,77 @@
+########## Init parameters ##########
+choose_model_to_train.model_name = 'transfer' #'efficientnet_v2', 'transfer'
+wandb_init.project = "test_efficient_net"
+wandb_init.entity = "your-entity"
+wandb_init.key = "xxx"
+
+########## Architectures ##########
+#--- EfficientNet V2 ---#
+EfficientNetV2.input_shape = (256, 256, 3)
+EfficientNetV2.num_classes = 2
+EfficientNetV2.width_factor = 0.5
+EfficientNetV2.depth_factor = 1.0
+EfficientNetV2.use_se_mbconv = True
+EfficientNetV2.use_se_fmbconv = False
+build_eff_net_v2.dropout_rate = 0.2
+build_eff_net_v2.dense_units = None
+
+#--- TransferModel ---#
+TransferModel.input_shape = (256, 256, 3)
+TransferModel.num_classes = 2
+TransferModel.dropout_rate = 0.2
+build_pretrained_model.unfreezed_layers = 320
+build_pretrained_model.name = "v2b1"
+
+########## Layers ##########
+mbconv_block.reduction_mbconv = 0.05  # between 0 , 1
+fused_mbconv_block.reduction_fmbconv = 0  # between 0, 1
+
+########## Training ##########
+Trainer.lr = 0.00001
+Trainer.total_steps = 500 # 1200
+Trainer.log_interval = 1e2
+Trainer.ckpt_interval = 1e3
+
+########## Input pipeline ##########
+#--- Used Datasets ---#
+load.name = 'idrid'
+load.data_dir = '/home/data/'
+
+#--- IDRID Dataset Parameters ---#
+load.use_binary_labels_idrid = True
+load.original_label_column = 'Retinopathy grade'
+load.binary_labels_column = 'Binary retinopathy grade'
+load.data_dir_train_images = 'IDRID_dataset/images/train'
+load.data_dir_train_labels = 'IDRID_dataset/labels/train.csv'
+load.data_dir_test_images = 'IDRID_dataset/images/test'
+load.data_dir_test_labels = 'IDRID_dataset/labels/test.csv'
+load.val_split = 0.2
+
+#--- Preprocess Parameters ---#
+preprocess.img_height = 256
+preprocess.img_width = 256
+preprocess.offset_height = 0
+preprocess.offset_width = 200
+preprocess.bounding_box_height = 2848
+preprocess.bounding_box_width = 3557
+preprocess.mode_norm = False # True
+
+#--- Dataset Creation Parameters ---#
+create_dataset.image_id = 'Image name'
+
+#--- Prepare Parameters ---#
+prepare.batch_size = 32 # 16
+prepare.buffer_size = 1000
+prepare.caching = True
+
+########## Deep Visualization ##########
+#--- Display Configuration ---#
+generate_grad_cam_heatmap.num_batches_displayed = 2
+generate_grad_cam_heatmap.num_items_displayed = 2
+
+#--- Generation Parameters ---#
+Grad_CAM.class_idx = None
+Grad_CAM.last_conv_layer_name = None
+overlay_and_display_heatmap.alpha = 0.4
+overlay_and_display_heatmap.colormap = 'viridis'
+overlay_and_display_heatmap.mode_norm = False # True
